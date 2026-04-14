@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        gradle 'Gradle'   // same name as configured in Jenkins
+        maven 'Maven'   // Use Maven (NOT Gradle)
         jdk 'JDK'
     }
 
@@ -10,26 +10,36 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/PrathwishShetty03/MymavenWebApp01.git'
+                git branch: 'main', 
+                url: 'https://github.com/PrathwishShetty03/MymavenWebApp01.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'gradle clean build'
+                sh 'mvn clean package'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'gradle test'
+                sh 'mvn test'
             }
         }
 
         stage('Archive') {
             steps {
-                archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
+                archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build SUCCESSFUL!'
+        }
+        failure {
+            echo '❌ Build FAILED!'
         }
     }
 }
