@@ -1,45 +1,36 @@
-pipeline {
-    agent any
-
-    tools {
-        maven 'Maven'   // Use Maven (NOT Gradle)
-        jdk 'JDK'
-    }
-
-    stages {
-
-        stage('Checkout') {
-            steps {
-                git branch: 'main', 
-                url: 'https://github.com/PrathwishShetty03/MymavenWebApp01.git'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage('Archive') {
-            steps {
-                archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
-            }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Build SUCCESSFUL!'
-        }
-        failure {
-            echo '❌ Build FAILED!'
-        }
-    }
+pipeline { 
+agent any  // Use any available agent 
+tools { 
+maven 'Maven'  // Ensure this matches the name configured in Jenkins 
+} 
+stages { 
+stage('Checkout') { 
+steps { 
+git branch: 'master', url: 'https://github.com/numankhanssk/MymavenWebApp01.git' 
+} 
+} 
+stage('Build') { 
+steps { 
+sh 'mvn clean package'  // Run Maven build 
+} 
+} 
+stage('Test') { 
+steps { 
+sh 'mvn test'  // Run unit tests 
+} 
+} 
+stage('Deploy WAR') { 
+steps { 
+sh 'cp target/MymavenWebApp01.war /opt/tomcat/webapps/' 
+} 
+} 
+} 
+post { 
+success { 
+echo 'Build and deployment successful!' 
+} 
+failure { 
+echo 'Build failed!' 
+} 
+} 
 }
